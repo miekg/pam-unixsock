@@ -85,8 +85,6 @@ func process(conn net.Conn, data []byte) {
 		case 1:
 			pam.service = scanner.Text()
 		case 2:
-			pam.password = scanner.Text()
-		case 3:
 			pam.prompt = scanner.Text()
 		}
 		i++
@@ -105,10 +103,9 @@ func process(conn net.Conn, data []byte) {
 type PamUnixSock struct {
 	username string
 	service  string
-	password string
 	prompt   string
 }
 
 func (p PamUnixSock) String() string {
-	return fmt.Sprintf("user %q - service %s - password %q - prompt %q", p.username, p.service, "xxx", p.prompt)
+	return fmt.Sprintf("user %q - service %s - prompt %q", p.username, p.service, p.prompt)
 }
