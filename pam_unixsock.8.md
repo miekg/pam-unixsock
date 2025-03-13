@@ -36,20 +36,27 @@ implements the *auth* module.
 :  when prompting for another authentication token, hide the input.
 
 **failopen**
-:  when set ignore failures to *connect* to the Unix socket and return PAM_SUCCESS.
+:  when set ignore failures to *connect* to the Unix socket and returns PAM_SUCCESS.
 
 # Protocol
 
 **pam_unixsock** implements an extremely simple socket protocol whereby it passes an username, the
-PAM service, and the second token (i.e. **PROMPT**) (separated by new lines) to the Unix socket and
-then your server simply replies with a 0 or 1:
+PAM module and service, and the second token (i.e. **PROMPT**) (separated by new lines) to the Unix
+socket and then your server simply replies with a 0 or 1:
 
     [pam_unixsock]   john_smith\n
+    [pam_unixsock]   <pam_module>\n
     [pam_unixsock]   <pam_service>\n
     [pam_unixsock]   <prompt>\n
     [your server]    1\n
 
 If your server answers within `timeout` with a `1` you are considered authenticated.
+
+**pam_module**
+:  this will be a string like "auth", or "passwd", etc.
+
+**pam_service**
+:  name of the calling process as given to PAM, i.e. "sshd".
 
 # Configuration
 
