@@ -45,9 +45,9 @@ static int connect_to_socket(int timeout)
 	return sockfd;
 }
 
-static int send_credentials(int sockfd, const char *username, const char *service, const char *prompt_response)
+static int send_credentials(int sockfd, const char *username, const char *service, const char *module, const char *prompt_response)
 {
-	dprintf(sockfd, "%s\n%s\n%s\n", username, service, prompt_response ? prompt_response : "");
+	dprintf(sockfd, "%s\n%s\n%s\n%s\n", username, service, module, prompt_response ? prompt_response : "");
 	char response;
 	if (debug) {
 		syslog(LOG_INFO,
@@ -155,7 +155,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		return PAM_SUCCESS;
 	}
 
-	retval = send_credentials(sockfd, username, service, prompt_response);
+	retval = send_credentials(sockfd, username, service, "auth", prompt_response);
 	close(sockfd);
 	return retval;
 }
