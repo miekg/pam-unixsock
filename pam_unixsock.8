@@ -31,20 +31,21 @@ set the timeout in seconds for how long to wait for a response from the server, 
 when prompting for another authentication token, hide the input.
 .TP
 \fBfailopen\fP
-when set ignore failures to \fIconnect\fP to the Unix socket and return PAM_SUCCESS.
+when set ignore failures to \fIconnect\fP to the Unix socket and returns PAM_SUCCESS.
 
 
 .SH "PROTOCOL"
 .PP
 \fBpam_unixsock\fP implements an extremely simple socket protocol whereby it passes an username, the
-PAM service, and the second token (i.e. \fBPROMPT\fP) (separated by new lines) to the Unix socket and
-then your server simply replies with a 0 or 1:
+PAM module and service, and the second token (i.e. \fBPROMPT\fP) (separated by new lines) to the Unix
+socket and then your server simply replies with a 0 or 1:
 
 .PP
 .RS
 
 .nf
 [pam\_unixsock]   john\_smith\\n
+[pam\_unixsock]   <pam\_module>\\n
 [pam\_unixsock]   <pam\_service>\\n
 [pam\_unixsock]   <prompt>\\n
 [your server]    1\\n
@@ -54,6 +55,14 @@ then your server simply replies with a 0 or 1:
 
 .PP
 If your server answers within \fB\fCtimeout\fR with a \fB\fC1\fR you are considered authenticated.
+
+.TP
+\fBpam_module\fP
+this will be a string like "auth", or "passwd", etc.
+.TP
+\fBpam_service\fP
+name of the calling process as given to PAM, i.e. "sshd".
+
 
 .SH "CONFIGURATION"
 .PP
