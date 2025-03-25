@@ -66,7 +66,13 @@ With Ubuntu (24.04), in `/etc/pam.d/sshd`:
     @include common-auth
 
     # add this line
-    auth required pam_unixsock.so debug Enter 2FA token
+    auth required pam_unixsock.so debug Enter 2FA token:
+
+If you want to pace the 2fa rollout, you can use pam_succeed_if.so, to skip (success=1) 2fa module
+when the user is not in the 2fa group.
+
+    auth [success=1] required pam_succeed_if.so user notingroup 2fa
+    auth required pam_unixsock.so debug Enter 2FA token:
 
 ## SSH
 

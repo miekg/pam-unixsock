@@ -76,7 +76,21 @@ With Ubuntu (24.04), in \fB\fC/etc/pam.d/sshd\fR:
 @include common\-auth
 
 # add this line
-auth required pam\_unixsock.so debug Enter 2FA token
+auth required pam\_unixsock.so debug Enter 2FA token:
+
+.fi
+.RE
+
+.PP
+If you want to pace the 2fa rollout, you can use pam_succeed_if.so, to skip (success=1) 2fa module
+when the user is not in the 2fa group.
+
+.PP
+.RS
+
+.nf
+auth [success=1] required pam\_succeed\_if.so user notingroup 2fa
+auth required pam\_unixsock.so debug Enter 2FA token:
 
 .fi
 .RE
