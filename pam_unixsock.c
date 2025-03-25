@@ -126,11 +126,11 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		pam_get_item(pamh, PAM_CONV, (const void **)&conv);
 		retval = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
 		if (retval != PAM_SUCCESS) {
-			syslog(LOG_ERR, "pam_unixsock(:auth): get conv returned error: %s", pam_strerror(pamh, retval));
+			syslog(LOG_ERR, "pam_unixsock(%s:auth): get conv returned error: %s", service, pam_strerror(pamh, retval));
 			return PAM_CONV_ERR;
 		}
 		if (!conv || !conv->conv) {
-			syslog(LOG_ERR, "pam_unixsock(:auth): conv() function invalid");
+			syslog(LOG_ERR, "pam_unixsock(%s:auth): conv() function invalid", service);
 			return PAM_CONV_ERR;
 		}
 
@@ -140,7 +140,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
 		retval = conv->conv(1, pmsg, &resp, conv->appdata_ptr);
 		if (retval != PAM_SUCCESS) {
 			syslog(LOG_ERR,
-			       "pam_unixsock(:auth): conv->conv returned error: %s", pam_strerror(pamh, retval));
+			       "pam_unixsock(%s:auth): conv->conv returned error: %s", service, pam_strerror(pamh, retval));
 			return PAM_CONV_ERR;
 		}
 		prompt_response = resp->resp;

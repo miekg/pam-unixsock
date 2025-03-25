@@ -90,4 +90,10 @@ second token.
 
 In Fedora the socket can't be written to by sshd because selinux does not allow it.
 
+If you get the error when using `sshd`:
+
+    pam_unixsock(sshd:auth): conv->conv returned error: Conversation error
+
+Be sure to have enabled `ChallengeResponseAuthentication yes` in the sshd configuration.
+
 # Author

@@ -117,6 +117,21 @@ second token.
 .PP
 In Fedora the socket can't be written to by sshd because selinux does not allow it.
 
+.PP
+If you get the error when using \fB\fCsshd\fR:
+
+.PP
+.RS
+
+.nf
+pam\_unixsock(sshd:auth): conv\->conv returned error: Conversation error
+
+.fi
+.RE
+
+.PP
+Be sure to have enabled \fB\fCChallengeResponseAuthentication yes\fR in the sshd configuration.
+
 .SH "AUTHOR"
 .SH ""
 .PP
