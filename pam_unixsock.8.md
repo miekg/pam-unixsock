@@ -16,47 +16,55 @@ pam_unixsock - PAM module to send credentials to a Unix socket
 
 # Description
 
-This code is a pluggable authentication module (PAM) that redirects the credentials to a local Unix
+This is a pluggable authentication module (PAM) that redirects the credentials to a local Unix
 socket. The server listening on that socket is then free to do many more complex things, because
 it's free from the calling process' address space. The Unix socket defaults to
-`/var/run/pam_unix.sock`. The protocol is described below and is fairly simplistic. If *PROMPT* is
+`/var/run/pam_unix.sock`. The protocol is described below and is fairly simplistic. If _PROMPT_ is
 given, the text is used to prompt the user for another (2FA) authentication token. This module only
-implements the *auth* module.
+implements the _auth_ module.
 
 # Options
 
 **debug**
-:  log debug information with `syslog(3)`.
+: log debug information with `syslog(3)`.
 
 **timeout**
-:  set the timeout in seconds for how long to wait for a response from the server, the default is
-   `timeout=2`.
+: set the timeout in seconds for how long to wait for a response from the server, the default is
+`timeout=2`.
 
 **hidden**
-:  when prompting for another authentication token, hide the input.
+: when prompting for another authentication token, hide the input.
 
 **failopen**
-:  when set ignore failures to *connect* to the Unix socket and returns PAM_SUCCESS.
+: when set ignore failures to _connect_ to the Unix socket and returns PAM_SUCCESS.
 
 # Protocol
 
 **pam_unixsock** implements an extremely simple socket protocol whereby it passes an username, the
-PAM module and service, and the second token (i.e. **PROMPT**) (separated by new lines) to the Unix
-socket and then your server simply replies with a 0 or 1:
+PAM module and service, the second token (i.e. **PROMPT**), and the environment variable
+`SSH_AUTH_INFO_0` (separated by new lines) to the Unix socket and then your server simply replies with a 0 or 1:
 
     [pam_unixsock]   john_smith\n
     [pam_unixsock]   <pam_module>\n
     [pam_unixsock]   <pam_service>\n
     [pam_unixsock]   <prompt>\n
+    [pam_unixsock]   <env>\n
     [your server]    1\n
 
 If your server answers within `timeout` with a `1` you are considered authenticated.
 
 **pam_module**
-:  this will be a string like "auth", or "passwd", etc.
+: this will be a string like "auth", or "passwd", etc.
 
 **pam_service**
-:  name of the calling process as given to PAM, i.e. "sshd".
+: name of the calling process as given to PAM, i.e. "sshd".
+
+**prompt**
+: the input that the user provided for **PROMPT**
+
+**env**
+: the contents of the environment variable `SSH_AUTH_INFO_0` (this comes from OpenSSH), or empty if
+it's not found.
 
 # Configuration
 
@@ -78,10 +86,10 @@ when the user is not in the 2fa group.
 
 In the `sshd` configuration be sure to add:
 
-~~~
+```
 KbdInteractiveAuthentication yes
 UsePAM yes
-~~~
+```
 
 Note that with public key authentication this is bypassed, and you log in without being asked for a
 second token.

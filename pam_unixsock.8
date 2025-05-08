@@ -11,7 +11,7 @@ pam_unixsock \- PAM module to send credentials to a Unix socket
 
 .SH "DESCRIPTION"
 .PP
-This code is a pluggable authentication module (PAM) that redirects the credentials to a local Unix
+This is a pluggable authentication module (PAM) that redirects the credentials to a local Unix
 socket. The server listening on that socket is then free to do many more complex things, because
 it's free from the calling process' address space. The Unix socket defaults to
 \fB\fC/var/run/pam_unix.sock\fR. The protocol is described below and is fairly simplistic. If \fIPROMPT\fP is
@@ -37,8 +37,8 @@ when set ignore failures to \fIconnect\fP to the Unix socket and returns PAM_SUC
 .SH "PROTOCOL"
 .PP
 \fBpam_unixsock\fP implements an extremely simple socket protocol whereby it passes an username, the
-PAM module and service, and the second token (i.e. \fBPROMPT\fP) (separated by new lines) to the Unix
-socket and then your server simply replies with a 0 or 1:
+PAM module and service, the second token (i.e. \fBPROMPT\fP), and the environment variable
+\fB\fCSSH_AUTH_INFO_0\fR (separated by new lines) to the Unix socket and then your server simply replies with a 0 or 1:
 
 .PP
 .RS
@@ -48,6 +48,7 @@ socket and then your server simply replies with a 0 or 1:
 [pam\_unixsock]   <pam\_module>\\n
 [pam\_unixsock]   <pam\_service>\\n
 [pam\_unixsock]   <prompt>\\n
+[pam\_unixsock]   <env>\\n
 [your server]    1\\n
 
 .fi
@@ -62,6 +63,13 @@ this will be a string like "auth", or "passwd", etc.
 .TP
 \fBpam_service\fP
 name of the calling process as given to PAM, i.e. "sshd".
+.TP
+\fBprompt\fP
+the input that the user provided for \fBPROMPT\fP
+.TP
+\fBenv\fP
+the contents of the environment variable \fB\fCSSH_AUTH_INFO_0\fR (this comes from OpenSSH), or empty if
+it's not found.
 
 
 .SH "CONFIGURATION"

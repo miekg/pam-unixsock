@@ -8,3 +8,6 @@ pam_unixsock.o: pam_unixsock.c
 
 clean:
 	rm -f pam_unixsock.o pam_unixsock.so
+
+pam_unixsock.8: pam_unixsock.8.md
+	mmark -man < pam_unixsock.8.md > pam_unixsock.8
