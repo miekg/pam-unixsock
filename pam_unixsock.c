@@ -49,7 +49,7 @@ static int send_credentials(int sockfd, const char *username,
                             const char *service, const char *module,
                             const char *prompt_response, const char *env) {
 
-  dprintf(sockfd, "%s\n%s\n%s\n%s\n%\n", username, service, module,
+  dprintf(sockfd, "%s\n%s\n%s\n%s\n%s\n", username, service, module,
           prompt_response ? prompt_response : "", env ? env : "");
   char response;
   if (debug) {
