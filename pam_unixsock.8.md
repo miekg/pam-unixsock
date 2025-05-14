@@ -23,6 +23,9 @@ it's free from the calling process' address space. The Unix socket defaults to
 given, the text is used to prompt the user for another (2FA) authentication token. This module only
 implements the _auth_ module.
 
+If the user authenticated with SSH and `SSH_AUTH_INFO_0` contains a security key; everything is side stepped
+and the user is allowed without prompting for a second factor.
+
 # Options
 
 **debug**
