@@ -18,6 +18,10 @@ it's free from the calling process' address space. The Unix socket defaults to
 given, the text is used to prompt the user for another (2FA) authentication token. This module only
 implements the \fIauth\fP module.
 
+.PP
+If the user authenticated with SSH and \fB\fCSSH_AUTH_INFO_0\fR contains a security key; everything is side stepped
+and the user is allowed without prompting for a second factor.
+
 .SH "OPTIONS"
 .TP
 \fBdebug\fP

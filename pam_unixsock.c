@@ -17,6 +17,63 @@
 
 bool debug = false;
 
+/*
+ * matchsk matches the string to see if it was a security key (sk).
+ * Example test match:
+ * "publickey sk-ssh-ed25519@openssh.com
+ * AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPkPxpwWvlgbEC6rEv15cULdMvfc3ai4fmskptv+WhmQAAAABHNzaDo="
+ */
+bool matchsk(const char *s) {
+  // Shortcut empty string check
+  if (s == NULL || *s == '\0') {
+    return false;
+  }
+
+  // Make a copy since strtok modifies the string
+  char *copy = strdup(s);
+  if (copy == NULL) {
+    return false; // Memory allocation failed
+  }
+
+  bool result = false;
+  char *saveptr = NULL;
+
+  // First token must be "publickey"
+  char *token = strtok_r(copy, " ", &saveptr);
+  if (token == NULL || strcmp(token, "publickey") != 0) {
+    goto cleanup;
+  }
+
+  // Second token must start with "sk-ssh-" and end with "@openssh.com"
+  token = strtok_r(NULL, " ", &saveptr);
+  if (token == NULL) {
+    goto cleanup;
+  }
+
+  size_t token_len = strlen(token);
+  const char *prefix = "sk-ssh-";
+  const char *suffix = "@openssh.com";
+  size_t prefix_len = strlen(prefix);
+  size_t suffix_len = strlen(suffix);
+
+  // Check prefix and suffix
+  if (strncmp(token, prefix, prefix_len) != 0) {
+    goto cleanup;
+  }
+
+  if (token_len < suffix_len ||
+      strcmp(token + token_len - suffix_len, suffix) != 0) {
+    goto cleanup;
+  }
+
+  // If we got here, all checks passed
+  result = true;
+
+cleanup:
+  free(copy);
+  return result;
+}
+
 static int connect_to_socket(int timeout) {
   int sockfd;
   struct sockaddr_un addr;
@@ -117,6 +174,17 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
     prompt = concat_with_space(prompt, ""); // adds trailing space
   }
 
+  const char *ssh_auth_info_0 = pam_getenv(pamh, "SSH_AUTH_INFO_0");
+  // if ssh_auth_info_0 contains the following we detected a security key, we
+  // allow access if seen and shortcut the whole procedure:
+  //    publickey sk-ssh-ed25519@openssh.com \
+  //    AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPkPxpwWvlgbEC6rEv15cULdMvfc3ai4fmskptv+WhmQAAAABHNzaDo=
+  if (matchsk(ssh_auth_info_0)) {
+    syslog(LOG_INFO, "pam_unixsock(auth): security key seen %s",
+           ssh_auth_info_0);
+    return PAM_SUCCESS;
+  }
+
   const char *username, *service, *prompt_response = "";
   pam_get_user(pamh, &username, NULL);
   pam_get_item(pamh, PAM_SERVICE, (const void **)&service);
@@ -159,8 +227,6 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
     }
     return PAM_SUCCESS;
   }
-
-  const char *ssh_auth_info_0 = pam_getenv(pamh, "SSH_AUTH_INFO_0");
 
   retval = send_credentials(sockfd, username, service, "auth", prompt_response,
                             ssh_auth_info_0);
