@@ -180,6 +180,8 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
   //    publickey sk-ssh-ed25519@openssh.com \
   //    AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPkPxpwWvlgbEC6rEv15cULdMvfc3ai4fmskptv+WhmQAAAABHNzaDo=
   if (matchsk(ssh_auth_info_0)) {
+    syslog(LOG_INFO, "pam_unixsock(auth): security key seen %s",
+           ssh_auth_info_0);
     return PAM_SUCCESS;
   }
 
