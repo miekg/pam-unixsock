@@ -15,8 +15,6 @@
 #define DEFAULT_TIMEOUT 2
 #define SOCKET_PATH "/var/run/pam_unix.sock"
 
-bool debug = false;
-
 /*
  * matchsk matches the string to see if it was a security key (sk).
  * Example test match:
@@ -102,7 +100,7 @@ static int connect_to_socket(int timeout) {
   return sockfd;
 }
 
-static int send_credentials(int sockfd, const char *username,
+static int send_credentials(int sockfd, bool debug, const char *username,
                             const char *service, const char *module,
                             const char *prompt_response, const char *env) {
 
@@ -148,6 +146,7 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
   char *prompt = NULL;
   bool hidden = false;
   bool failopen = false;
+  bool debug = false;
   int timeout = DEFAULT_TIMEOUT;
 
   for (int i = 0; i < argc; i++) {
@@ -195,7 +194,6 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
     struct pam_response *resp = NULL;
     struct pam_conv *conv;
 
-    pam_get_item(pamh, PAM_CONV, (const void **)&conv);
     retval = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
     if (retval != PAM_SUCCESS) {
       syslog(LOG_ERR, "pam_unixsock(:auth): get conv returned error: %s",
@@ -228,8 +226,8 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
     return PAM_SUCCESS;
   }
 
-  retval = send_credentials(sockfd, username, service, "auth", prompt_response,
-                            ssh_auth_info_0);
+  retval = send_credentials(sockfd, debug, username, service, "auth",
+                            prompt_response, ssh_auth_info_0);
   close(sockfd);
   return retval;
 }
