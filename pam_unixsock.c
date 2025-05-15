@@ -42,14 +42,14 @@ bool matchsk(const char *s) {
     goto cleanup;
   }
 
-  // Second token must start with "sk-ssh-" and end with "@openssh.com"
+  // Second token must start with "sk-" and end with "@openssh.com"
   token = strtok_r(NULL, " ", &saveptr);
   if (token == NULL) {
     goto cleanup;
   }
 
   size_t token_len = strlen(token);
-  const char *prefix = "sk-ssh-";
+  const char *prefix = "sk-";
   const char *suffix = "@openssh.com";
   size_t prefix_len = strlen(prefix);
   size_t suffix_len = strlen(suffix);
