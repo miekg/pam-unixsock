@@ -19,8 +19,8 @@ given, the text is used to prompt the user for another (2FA) authentication toke
 implements the \fIauth\fP module.
 
 .PP
-If the user authenticated with SSH and \fB\fCSSH_AUTH_INFO_0\fR contains a security key; everything is side stepped
-and the user is allowed without prompting for a second factor.
+If the user authenticated with SSH and \fB\fCSSH_AUTH_INFO_0\fR contains a security key (public key starts with \fB\fCsk-\fR
+and ends in \fB\fC@openssh.com\fR; everything is side stepped and the user is allowed without prompting for a second factor.
 
 .SH "OPTIONS"
 .TP
