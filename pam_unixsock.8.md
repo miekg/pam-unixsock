@@ -32,8 +32,7 @@ and the user is allowed without prompting for a second factor.
 : log debug information with `syslog(3)`.
 
 **timeout**
-: set the timeout in seconds for how long to wait for a response from the server, the default is
-`timeout=2`.
+: set the timeout in seconds for how long to wait for a response from the server, the default is `timeout=5`.
 
 **hidden**
 : when prompting for another authentication token, hide the input.
