@@ -32,8 +32,7 @@ and ends in `@openssh.com`; everything is side stepped and the user is allowed w
 : log debug information with `syslog(3)`.
 
 **timeout**
-: set the timeout in seconds for how long to wait for a response from the server, the default is
-`timeout=2`.
+: set the timeout in seconds for how long to wait for a response from the server, the default is `timeout=5`.
 
 **hidden**
 : when prompting for another authentication token, hide the input.

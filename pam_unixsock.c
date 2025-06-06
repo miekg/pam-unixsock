@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define DEFAULT_TIMEOUT 2
+#define DEFAULT_TIMEOUT 5
 #define SOCKET_PATH "/var/run/pam_unix.sock"
 
 /*
