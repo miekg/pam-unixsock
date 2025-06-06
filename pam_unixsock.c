@@ -22,7 +22,6 @@
  * AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIPkPxpwWvlgbEC6rEv15cULdMvfc3ai4fmskptv+WhmQAAAABHNzaDo="
  */
 bool matchsk(const char *s) {
-  // Shortcut empty string check
   if (s == NULL || *s == '\0') {
     return false;
   }
@@ -30,7 +29,7 @@ bool matchsk(const char *s) {
   // Make a copy since strtok modifies the string
   char *copy = strdup(s);
   if (copy == NULL) {
-    return false; // Memory allocation failed
+    return false;
   }
 
   bool result = false;
