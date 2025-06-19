@@ -12,7 +12,7 @@
 #include <time.h>
 #include <unistd.h>
 
-#define DEFAULT_TIMEOUT 5
+#define DEFAULT_TIMEOUT 10
 #define SOCKET_PATH "/var/run/pam_unix.sock"
 
 /*
@@ -120,6 +120,8 @@ static int send_credentials(int sockfd, bool debug, const char *username,
     }
     return PAM_SUCCESS;
   }
+  // if we got here, due to a timeout of the request, we can't really say
+  // PAM_SUCCESS, because then everything would OK all requests...
   return PAM_AUTH_ERR;
 }
 
