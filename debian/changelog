@@ -1,3 +1,9 @@
+libpam-unixsock (0.5.7) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Miek Gieben <miek@miek.nl>  Thu, 19 Jun 2025 10:51:10 +0200
+
 libpam-unixsock (0.5.6) unstable; urgency=medium
 
   * New upstream release
