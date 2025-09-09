@@ -1,5 +1,6 @@
 #define _GNU_SOURCE
 #include <errno.h>
+#include <security/_pam_types.h>
 #include <security/pam_ext.h>
 #include <security/pam_modules.h>
 #include <stdbool.h>
@@ -111,17 +112,29 @@ static int send_credentials(int sockfd, bool debug, const char *username,
            "pam_unixsock(%s:auth): wrote credentials to socket %s for %s",
            service, SOCKET_PATH, username);
   }
-  if (read(sockfd, &response, 1) == 1 && response == '1') {
-    if (debug) {
-      syslog(LOG_INFO,
-             "pam_unixsock(%s:auth): positive response from server seen for %s",
-             service, username);
+  if (read(sockfd, &response, 1) == 1) {
+    if (response == '1') {
+      if (debug) {
+        syslog(LOG_INFO,
+               "pam_unixsock(%s:auth): positive response from server seen "
+               "for %s",
+               service, username);
+      }
+      return PAM_SUCCESS;
     }
-    return PAM_SUCCESS;
+    if (response == '0') {
+      if (debug) {
+        syslog(LOG_INFO,
+               "pam_unixsock(%s:auth): negative response from server seen "
+               "for %s",
+               service, username);
+      }
+      return PAM_AUTH_ERR;
+    }
   }
   // if we got here, due to a timeout of the request, we can't really say
   // PAM_SUCCESS, because then everything would OK all requests...
-  return PAM_AUTH_ERR;
+  return PAM_SERVICE_ERR;
 }
 
 char *concat_with_space(const char *a, const char *b) {
@@ -230,6 +243,10 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc,
   retval = send_credentials(sockfd, debug, username, service, "auth",
                             prompt_response, ssh_auth_info_0);
   close(sockfd);
+  if (retval == PAM_SERVICE_ERR && failopen) {
+    return PAM_SUCCESS;
+  }
+
   return retval;
 }
 
