@@ -38,13 +38,15 @@ and ends in `@openssh.com`; everything is side stepped and the user is allowed w
 : when prompting for another authentication token, hide the input.
 
 **failopen**
-: when set ignore failures to _connect_ to the Unix socket and returns PAM_SUCCESS.
+: when set ignore failures to _connect_ to the Unix socket and returns PAM_SUCCESS, when a timeout is returned
+but an upstream server that checkcs the second factor any timeout will be ignored and PAM_SUCCESS will be returned.
 
 # Protocol
 
 **pam_unixsock** implements an extremely simple socket protocol whereby it passes an username, the
 PAM module and service, the second token (i.e. **PROMPT**), and the environment variable
-`SSH_AUTH_INFO_0` (separated by new lines) to the Unix socket and then your server simply replies with a 0 or 1:
+`SSH_AUTH_INFO_0` (separated by new lines) to the Unix socket and then your server simply replies with a 0, 1 or
+2 when there was a timeout.
 
     [pam_unixsock]   john_smith\n
     [pam_unixsock]   <pam_module>\n
@@ -53,7 +55,8 @@ PAM module and service, the second token (i.e. **PROMPT**), and the environment 
     [pam_unixsock]   <env>\n
     [your server]    1\n
 
-If your server answers within `timeout` with a `1` you are considered authenticated.
+If your server answers within `timeout` with a `1` you are considered authenticated, `0` is not authenticated, and
+2 boils down to "do not know".
 
 **pam_module**
 : this will be a string like "auth", or "passwd", etc.
